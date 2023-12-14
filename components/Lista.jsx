@@ -1,20 +1,61 @@
-import { View, Text, StyleSheet } from "react-native";
+import { useEffect, useState } from "react";
+import { StyleSheet, Text, View, ScrollView } from "react-native";
 
 
+import ItemLista from "./ItemLista";
+import { getLista } from "./dados";
 
-export default function Lista() {
-    return (
-        <View style={styles.container}>
-            <Text>Lista</Text>
-        </View>
-    )
+export default function Lista({navigation}, props) {
+  const [itens, setItens] = useState([]);
+
+  useEffect(()=>{
+    getLista().then((lista) => setItens(lista))
+  },[props])
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Lista de Compras</Text>
+      <Text>{props.descricao}</Text>
+      <ScrollView
+        style={styles.scrollContainer}
+        contentContainerStyle={styles.itemsContainer}
+      >
+        {itens.map((item) => (
+          <ItemLista key={item.id} navegacao={navigation} id={item.id} descricao={item.descricao} quantidade={item.quantidade} />
+        ))}
+        {itens.length == 0 && <Text style={styles.text}>Lista Vazia</Text>}
+      </ScrollView>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#6655CC',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
+  container: {
+    backgroundColor: "#6655CC",
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+  },
+  title: {
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "bold",
+    marginTop: 30,
+    marginBottom: 15,
+  },
+  scrollContainer: {
+    width: "85%",
+  },
+  itemsContainer: {
+    marginTop: 5,
+    padding: 20,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    alignItems: "stretch",
+    backgroundColor: "#fff",
+  },
+  text: {
+    textAlign: "center",
+    fontSize: 20,
+  },
 });

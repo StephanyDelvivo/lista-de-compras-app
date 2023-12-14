@@ -1,76 +1,107 @@
-import { useState } from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from "react-native";
+import { useEffect, useState } from "react";
+import {
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+    TextInput,
+} from "react-native";
 
+import { salvarItem } from "./dados";
+import ItemLista from "./ItemLista";
 
-export default function Formulario() {
-    const [item, setItem] = useState('')
-    const [quantidade, setQuantidade] = useState(0)
+export default function Formulario({ route, navigation }) {
 
+    const [descricao, setDescricao] = useState('')
+    const [quantidade, setQuantidade] = useState('')
+
+    const { id, desc, quant } = route.params
+
+    useEffect(() => {
+        setDescricao(desc)
+        setQuantidade(JSON.stringify(quant))
+    }, [desc])
+
+    const handleButtonPress = async () => {
+        const itemLista = {
+            id: new Date().getTime(),
+            descricao: descricao,
+            quantidade: parseInt(quantidade)
+        }
+
+        await salvarItem(itemLista)
+
+        setDescricao('')
+        setQuantidade('')
+        navigation.navigate('Lista', itemLista)
+    }
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>
-                Item para comprar
-            </Text>
+            <Text style={styles.title}>Item para comprar</Text>
             <View style={styles.inputContainer}>
                 <TextInput
                     style={styles.input}
-                    placeholder='O que está faltando em casa?'
-                    onChangeText={(texto) => setItem(texto)}/>
+                    placeholder="O que está faltando em casa?"
+                    value={descricao}
+                    onChangeText={(valor) => { setDescricao(valor) }}
+                />
                 <TextInput
                     style={styles.input}
-                    placeholder='Digite a quantidade'
-                    keyboardType='numeric'
-                    onChangeText={(numero) => setQuantidade(numero)} />
-                <TouchableOpacity style={styles.button} onPress={() => alert(`Item: ${item}; Quantidade: ${quantidade}`)}>
+                    placeholder="Digite a quantidade"
+                    keyboardType="numeric"
+                    value={quantidade}
+                    onChangeText={setQuantidade}
+                />
+                <TouchableOpacity style={styles.button} onPress={handleButtonPress}>
                     <Text style={styles.buttonText}>Salvar</Text>
                 </TouchableOpacity>
             </View>
-
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#6655CC',
-        alignItems: 'center',
-        justifyContent: 'center',
+        backgroundColor: "#6655CC",
+        alignItems: "center",
+        justifyContent: "center",
     },
     title: {
-        color: '#fff',
+        color: "#fff",
         fontSize: 24,
-        fontWeight: 'bold',
+        fontWeight: "bold",
         marginTop: 50,
     },
     inputContainer: {
-        flex: 0.6,
+        flex: 1,
         marginTop: 30,
-        width: '90%',
+        width: "90%",
         padding: 20,
-        borderRadius: 10,
-        backgroundColor: '#fff'
+        borderTopLeftRadius: 10,
+        borderTopRightRadius: 10,
+        backgroundColor: "#fff",
     },
     input: {
         marginTop: 10,
         height: 60,
-        backgroundColor: '#fff',
+        backgroundColor: "#fff",
         borderRadius: 10,
         paddingHorizontal: 24,
         fontSize: 16,
     },
     button: {
         marginTop: 10,
-        height: 50,
-        backgroundColor: 'blue',
+        height: 60,
+        backgroundColor: "blue",
         borderRadius: 10,
         paddingHorizontal: 24,
-        alignItems: 'center',
-        justifyContent: 'center',
+        alignItems: "center",
+        justifyContent: "center",
     },
     buttonText: {
-        color: '#fff',
-        fontWeight: 'bold',
+        color: "#fff",
+        fontWeight: "bold",
         fontSize: 18,
-    }
+    },
 });
