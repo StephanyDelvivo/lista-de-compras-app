@@ -12,6 +12,16 @@ export async function salvarItem(itemLista) {
   }
 }
 
+export async function removeItem(idItem) {
+  try {
+    const lista = await getLista();
+    let listaNova = JSON.stringify(lista.filter((item) => item.id != idItem))
+    await AsyncStorage.setItem("lista", listaNova)
+  } catch(e) {
+    console.log(e)
+  }
+}
+
 export async function getLista() {
   try{
     const dados = await AsyncStorage.getItem("lista")

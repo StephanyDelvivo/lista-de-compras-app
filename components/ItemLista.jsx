@@ -1,35 +1,43 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View, Alert, Platform } from "react-native";
+import { removeItem } from "./dados";
 
+export default function ItemLista({ navigation, item }) {
 
-export default function ItemLista(props) {
+  const chamaFormEdicao = (item) => {
+    navigation.navigate('Formulario', item)
+  }
 
-  const chamaFormEdicao = (descricao, quantidade, id) => {
-    const item = {
-      id: id,
-      descricao: descricao,
-      quantidade: quantidade
+  const apagar = async (id) => {
+    if (Platform.OS == 'web') {
+      if (confirm('Deseja apagar ?')) {
+        await removeItem(id);
+        navigation.navigate('Lista', item.id)
+      }
     }
-
-    const navigation = props.navegacao
-    navigation.navigate('Formulario', {
-      id: id,
-      desc: descricao,
-      quant: quantidade
-    }
-    )
-
+    Alert.alert('Confirmação', 'Deseja apagar ?', [
+      {
+        text: 'Cancelar',
+        onPress: () => navigation.navigate('Lista')
+      },
+      {
+        text: 'Continuar', onPress: async () => {
+          await removeItem(id);
+          navigation.navigate('Lista', item.id)
+        }
+      },
+    ]);
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.textItem}>{props.descricao}</Text>
-      <Text style={styles.textItem}>{props.quantidade}</Text>
+      <Text style={styles.textItem}>{item.descricao}</Text>
+      <Text style={styles.textItem}>{item.quantidade}</Text>
       <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.deleteButton}>
+        <TouchableOpacity style={styles.deleteButton} onPress={() => apagar(item.id)}>
           <Text style={styles.buttonText}>X</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.editButton}>
-          <Text style={styles.buttonText} onPress={() => chamaFormEdicao(props.descricao, props.quantidade, props.id)}>
+          <Text style={styles.buttonText} onPress={() => chamaFormEdicao(item)}>
             Editar
           </Text>
         </TouchableOpacity>

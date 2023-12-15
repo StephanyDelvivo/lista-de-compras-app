@@ -10,17 +10,20 @@ import {
 import { salvarItem } from "./dados";
 import ItemLista from "./ItemLista";
 
-export default function Formulario({ route, navigation }) {
+export default function Formulario({ navigation, route }) {
 
     const [descricao, setDescricao] = useState('')
     const [quantidade, setQuantidade] = useState('')
 
-    const { id, desc, quant } = route.params
 
     useEffect(() => {
-        setDescricao(desc)
-        setQuantidade(JSON.stringify(quant))
-    }, [desc])
+        console.log(route.params)
+        if (route.params) {
+            const { id, descricao, quantidade } = route.params
+            setDescricao(descricao)
+            setQuantidade(quantidade.toString())
+        }
+    }, [route])
 
     const handleButtonPress = async () => {
         const itemLista = {

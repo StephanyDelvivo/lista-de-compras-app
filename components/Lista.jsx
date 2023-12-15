@@ -5,23 +5,22 @@ import { StyleSheet, Text, View, ScrollView } from "react-native";
 import ItemLista from "./ItemLista";
 import { getLista } from "./dados";
 
-export default function Lista({navigation}, props) {
+export default function Lista({navigation, route}) {
   const [itens, setItens] = useState([]);
 
   useEffect(()=>{
     getLista().then((lista) => setItens(lista))
-  },[props])
+  },[route])
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Lista de Compras</Text>
-      <Text>{props.descricao}</Text>
       <ScrollView
         style={styles.scrollContainer}
         contentContainerStyle={styles.itemsContainer}
       >
         {itens.map((item) => (
-          <ItemLista key={item.id} navegacao={navigation} id={item.id} descricao={item.descricao} quantidade={item.quantidade} />
+            <ItemLista key={item.id} navigation={navigation} item={item}/>
         ))}
         {itens.length == 0 && <Text style={styles.text}>Lista Vazia</Text>}
       </ScrollView>
