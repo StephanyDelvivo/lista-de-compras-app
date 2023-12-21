@@ -8,22 +8,51 @@ import {
 } from "react-native";
 
 import { salvarItem } from "./dados";
+import { alterarItem } from './dados'
 import ItemLista from "./ItemLista";
 
 export default function Formulario({ navigation, route }) {
 
+    const [id, setId] = useState(null)
     const [descricao, setDescricao] = useState('')
     const [quantidade, setQuantidade] = useState('')
+    const [edit, setEdit] = useState(false)
 
 
     useEffect(() => {
         console.log(route.params)
         if (route.params) {
             const { id, descricao, quantidade } = route.params
+            setId(id)
             setDescricao(descricao)
             setQuantidade(quantidade.toString())
+            setEdit(true)
         }
     }, [route])
+
+    const editarItem = async () => {
+        if (descricao !== '' && quantidade !== '') {
+            const item = {
+                id: id,
+                descricao: descricao,
+                quantidade: quantidade
+            }
+
+            await alterarItem(item.id, item)
+            setDescricao('')
+            setQuantidade('')
+            setEdit(false)
+            navigation.navigate('Lista', item)
+        }
+    }
+
+    const cancelarEdicao = () => {
+        setId(null)
+        setDescricao('')
+        setQuantidade('')
+        setEdit(false)
+        navigation.navigate('Lista')
+    }
 
     const handleButtonPress = async () => {
         const itemLista = {
@@ -55,9 +84,19 @@ export default function Formulario({ navigation, route }) {
                     value={quantidade}
                     onChangeText={setQuantidade}
                 />
-                <TouchableOpacity style={styles.button} onPress={handleButtonPress}>
-                    <Text style={styles.buttonText}>Salvar</Text>
-                </TouchableOpacity>
+                {edit && <>
+                    <TouchableOpacity style={styles.button} onPress={editarItem}>
+                        <Text style={styles.buttonText}>Salvar Alterações</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.buttonCancelar} onPress={cancelarEdicao}>
+                        <Text style={styles.buttonText}>Cancelar</Text>
+                    </TouchableOpacity>
+                </>}
+                {!edit && descricao !== '' && quantidade !== '' ?
+                    <TouchableOpacity style={styles.button} onPress={handleButtonPress}>
+                        <Text style={styles.buttonText}>Salvar</Text>
+                    </TouchableOpacity>
+                    : <></>}
             </View>
         </View>
     );
@@ -97,6 +136,15 @@ const styles = StyleSheet.create({
         marginTop: 10,
         height: 60,
         backgroundColor: "blue",
+        borderRadius: 10,
+        paddingHorizontal: 24,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    buttonCancelar: {
+        marginTop: 10,
+        height: 60,
+        backgroundColor: "red",
         borderRadius: 10,
         paddingHorizontal: 24,
         alignItems: "center",

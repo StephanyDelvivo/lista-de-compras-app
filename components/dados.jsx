@@ -12,6 +12,20 @@ export async function salvarItem(itemLista) {
   }
 }
 
+export async function alterarItem(idItem, item){
+  // console.log(`ID: ${idItem}`)
+  // console.log(`ITEM: ${JSON.stringify(item)}`)
+  try {
+    const lista = await getLista()
+    let indice = lista.findIndex((item) => item.id == idItem)
+    lista[indice] = item
+    const listaJson = JSON.stringify(lista)
+    await AsyncStorage.setItem("lista", listaJson)
+  } catch (e) {
+    console.log(e)
+  }
+}
+
 export async function removeItem(idItem) {
   try {
     const lista = await getLista();
